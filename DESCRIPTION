@@ -1,0 +1,23 @@
+Package: sigInt
+Title: Estimate the parameters of a discrete crisis-bargaining game
+Version: 0.0.0.9000
+Authors@R: c(person("Casey", "Crisman-Cox", email = "ccrismancox@gmail.com", role = c("aut", "cre")),  person("Michael", "Gibilisco", email = "michael.gibilisco@caltech.edu", role = c("aut")))
+Description: Provides pseudo-likelihood methods for analyzing the canonical signaling game in international relations.
+Depends: R (>= 3.4.3)
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1.9000
+Imports: randomForest, stringr, pbivnorm, Formula, maxLik, xtable
+Suggests: parallel
+Collate:
+    'convergence.r'
+    'doc.r'
+    'estimationfunctions.r'
+    'grfunctions.r'
+    'plot.sigProb.r'
+    'predict.sigfit.r'
+    'print.sigfit.r'
+    'sigint.r'
+    'summary.sigfit.r'
+    'toLatex.sigfit.r'

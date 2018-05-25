@@ -129,5 +129,5 @@ p2 <- predict(fit1, newdata=sanctionsData[1,], new.theta=new.theta, control=list
 
 }
 \seealso{
-\code{\link{plot.sigProb}}
+\code{\link{plot.sigProb}}, \code{\link{generate.eq}}
 }

@@ -85,7 +85,7 @@
 #' it can be helpful to parallelize process.  If the user has the
 #' (suggested) \code{\link[parallel]{parallel}} package, then the option \code{parallel = TRUE}
 #' will use the function \code{\link[parallel]{parSapply}} is used.
-#' @seealso \code{\link{plot.sigProb}} 
+#' @seealso \code{\link{plot.sigProb}}, \code{\link{generate.eq}}
 #' @import Formula
 #' @export
 #'
@@ -309,6 +309,9 @@ Please install parallel to use this option.  Switching to parallel=FALSE")
   output <- list(predicted = output,
                  model = mf.new,
                  par = par)
+  if(any(table(output$predicted$Row))==2){
+    warning("Only two equilibria found under these settings, consider a larger grid")
+  }
   class(output) <- c("sigProb")
   return(output)
 }

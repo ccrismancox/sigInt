@@ -411,6 +411,7 @@ sigint <- function(formulas, data, subset, na.action,
   ######## PL Estimates #########
   
   # start values
+  set.seed(seed)
   if(missing(start.beta)){
     start.beta <- rnorm(ncols)*0.05
   }

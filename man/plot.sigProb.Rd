@@ -45,5 +45,5 @@ plot(p1.a, prob="pc", ylab="Pr Challenge", xlab="Audience Costs", type="l")
 
 }
 \seealso{
-\code{\link{predict.sigfit}}
+\code{\link{predict.sigfit}} \code{\link{generate.eq}}
 }

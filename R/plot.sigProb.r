@@ -7,7 +7,7 @@
 #' @param prob A string providing the column name for the column of \code{object$predicted} should be used as the outcome or probability of interest.
 #' @param xvar A string providing the column name of the column (from either object$model or object$par) that provides the "x-variable" in the plot.
 #' @param col A string used to 
-#' @seealso \code{\link{predict.sigfit}}
+#' @seealso \code{\link{predict.sigfit}} \code{\link{generate.eq}}
 #' @export
 #' 
 #' @examples
@@ -46,14 +46,14 @@ plot.sigProb <- function(object, prob, xvar, col="blue", ylab, xlab, pch=16, mai
     ndata <- nrow(object$model)
 
     
-    if(ndata == 1 & ntheta == 1){
-        warning("Only one row found for both model data and parameters. Are you sure you want this plot?")
+    if(ndata <=1 & ntheta <= 1){
+        stop("Only one row or less found for both model data and parameters. Not enough variation to plot")
     }
 
     
-    if(ndata == 1 & ntheta > 1){
+    if(ndata <= 1 & ntheta > 1){
         if(missing(xvar)){
-            search <- apply(object$par, 2, unique)
+            search <- lapply(object$par, unique)
             search$Row <- NULL
             xvar <- names(which(sapply(search, function(x){length(x)>1})))
             if(length(xvar)>1){
@@ -73,9 +73,9 @@ plot.sigProb <- function(object, prob, xvar, col="blue", ylab, xlab, pch=16, mai
         merged.data <- merge(object$predicted, object$par, by="row")
         Xdata <- merged.data[,xvar]
     }
-    if(ndata > 1 & ntheta == 1){
+    if(ndata > 1 & ntheta <= 1){
         if(missing(xvar)){
-            search <- apply(object$model, 2, unique)
+            search <- lapply(object$model,  unique)
             search$Row <- NULL
             xvar <- names(which(sapply(search, function(x){length(x)>1})))
             if(length(xvar)>1){

@@ -4,8 +4,8 @@
 \alias{toLatex.sigfit}
 \title{Export a \code{sigfit} object into paper-ready LaTeX table}
 \usage{
-\method{toLatex}{sigfit}(..., se.list, stars = c("default", "all", "none"),
-  caption = "", label, align, digits = 2,
+\method{toLatex}{sigfit}(..., se.list, stars = c("default", "all",
+  "none"), caption = "", label, align, digits = 2,
   se.note = "Standard errors in parenthesis", order, covariate.labels,
   model.names, dep.varnames, k = 1, print.xtable.options = list())
 }

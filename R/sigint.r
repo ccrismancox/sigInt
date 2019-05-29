@@ -342,6 +342,7 @@ sigint <- function(formulas, data, subset, na.action,
   }
   
   #######First stage######
+  init.seed <- runif(1) #just to make sure .Random exists
   old.seed <- .Random.seed
   on.exit(assign(".Random.seed", old.seed, envir=globalenv()))
   set.seed(seed)  
@@ -392,8 +393,8 @@ sigint <- function(formulas, data, subset, na.action,
     }
     
     
-    m1 <- randomForest(y=phat.X$X1[,1], x=phat.X$X1[,-1])
-    m2 <- randomForest(y=phat.X$X2[,1], x=phat.X$X2[,-1])
+    m1 <- randomForest(y=phat.X$X1[,1], x=phat.X$X1[,-1, FALSE])
+    m2 <- randomForest(y=phat.X$X2[,1], x=phat.X$X2[,-1, FALSE])
     
     phat <- list(PRhat = predict(m1, newdata=X1, type=type1),
                  PFhat = predict(m2, newdata=X2, type=type2))
@@ -434,7 +435,7 @@ sigint <- function(formulas, data, subset, na.action,
   
   Phat0 = phat
   eq.const.pl <- const.jo(Phat0$PRhat, vec2U.regr(out$estimate, regr))  
-    
+  
   ####### NPL Procedure #####
   if(method=="npl"){
     tol = npl.tol
@@ -494,10 +495,33 @@ sigint <- function(formulas, data, subset, na.action,
     JpPsi <- dPsiDp(Phat$PRhat, Phat$PFhat, out.NPL$est, Y, regr)
     JtPsi <- dPsi.dTheta(out.NPL$estimate,Phat$PRhat, Phat$PFhat, Y, regr)
     
-    topSlice <- solve(Dtheta.theta  +
-                        Dtheta.p %*% solve(diag(nrow(JpPsi)) - t(JpPsi)) %*%   JtPsi)
-    bottomSlice <- solve(Dtheta.theta  +
-                           t(JtPsi) %*% solve(diag(nrow(JpPsi)) - t(JpPsi)) %*% t(Dtheta.p))
+    JpPsi.inv <-  tryCatch(solve(diag(nrow(JpPsi)) - t(JpPsi)),
+                           error=function(x){
+                             warning("Possible singular matrix detected, using Pseudoinverse");
+                             return(MASS::ginv(diag(nrow(JpPsi)) - t(JpPsi)))
+                           })
+    
+    
+    topSlice <- tryCatch(solve(Dtheta.theta  +
+                                 Dtheta.p %*% JpPsi.inv %*%   JtPsi),
+                         error=function(x){
+                           warning("Possible singular matrix detected, using Pseudoinverse");
+                           return(MASS::ginv(Dtheta.theta  +
+                                               Dtheta.p %*% JpPsi.inv %*%   JtPsi))
+                         })
+    bottomSlice <- tryCatch(solve(Dtheta.theta  +
+                                     t(JtPsi) %*% JpPsi.inv %*% t(Dtheta.p)),
+                         error=function(x){
+                           warning("Possible singular matrix detected, using Pseudoinverse");
+                           return(MASS::ginv(Dtheta.theta  +
+                                               t(JtPsi) %*% JpPsi.inv %*% t(Dtheta.p)))
+                         })
+    
+    
+    # topSlice <- solve(Dtheta.theta  +
+    #                     Dtheta.p %*% solve(diag(nrow(JpPsi)) - t(JpPsi)) %*%   JtPsi)
+    # bottomSlice <- solve(Dtheta.theta  +
+    #                        t(JtPsi) %*% solve(diag(nrow(JpPsi)) - t(JpPsi)) %*% t(Dtheta.p))
     vcov.NPL <- topSlice %*% Dtheta.theta %*% bottomSlice
     # cat("gradient", out.NPL$gradient, "\n")
     # cat("gradient2",  grqll(out.NPL$estimate), "\n")
@@ -540,63 +564,69 @@ sigint <- function(formulas, data, subset, na.action,
                    maxlik.message=out$message)
     
     #### PL VCOV ####
+    if(!missing(phat.vcov)){pl.vcov <- TRUE}
     if(pl.vcov>0){
       if(USER.PHAT | !missing(phat.vcov)){
         SIGMA <- phat.vcov
       }else{
         if(USER.PHAT & missing(phat.vcov)){
-          stop("User supplied phat, but phat.vcov is missing.")
+          warning("User supplied phat, but phat.vcov is missing. Standard errors not returned")
+        }else{
+          Phat.boot <- matrix(0, ncol=ncol(Y)*2, nrow=pl.vcov)
+          for(i in 1:pl.vcov){
+            Y.boot <- 0
+            while(mean(Y.boot) == 0 | mean(Y.boot) == 1){
+              use <- sample(1:ncol(Y), replace=T)
+              Y.boot <- Y[,use]
+              X1.boot <- X1[use,]
+              X2.boot <- X2[use,]
+            }
+            index1.boot <- colSums(Y.boot[2:4,]) >= 1
+            index2.boot <- colSums(Y.boot[3:4,]) >= 1
+            phat.X.boot <- list(X1 = cbind((colSums(Y.boot[3:4,])/colSums(Y.boot[2:4,]))[index1.boot],
+                                           X1.boot[index1.boot,]),
+                                X2 = cbind(((Y.boot[3,])/colSums(Y.boot[3:4,]))[index2.boot],
+                                           X2.boot[index2.boot,]))
+            
+            
+            
+            phat.X.boot <- lapply(phat.X.boot, as.data.frame)
+            if(length(unique(phat.X.boot$X1[,1])) == 2){
+              phat.X.boot$X1[,1] <- as.factor(phat.X.boot$X1[,1])
+              type1 <- "prob"
+            }else{
+              type1 <- "response"
+            }
+            if(length(unique(phat.X.boot$X1[,1])) == 2){
+              phat.X.boot$X2[,1] <- factor(phat.X.boot$X2[,1]); type2 <- "prob"
+            }else{
+              type2 <- "response"
+            }
+            
+            m1 <- randomForest(y=phat.X.boot$X1[,1], x=phat.X.boot$X1[,-1])
+            m2 <- randomForest(y=phat.X.boot$X2[,1], x=phat.X.boot$X2[,-1])
+            
+            phat.out <- list(PRhat = predict(m1, newdata=X1, type=type1),
+                             PFhat = predict(m2, newdata=X2, type=type2))
+            
+            if(type1 == "prob"){phat.out$PRhat <- phat.out$PRhat[,2]}
+            if(type2 == "prob"){phat.out$PFhat <- phat.out$PFhat[,2]}
+            
+            
+            
+            Phat.boot[i,] <- unlist(phat.out)
+          }
+          SIGMA <- var(Phat.boot, na.rm=TRUE)
         }
-        Phat.boot <- matrix(0, ncol=ncol(Y)*2, nrow=pl.vcov)
-        for(i in 1:pl.vcov){
-          Y.boot <- 0
-          while(mean(Y.boot) == 0 | mean(Y.boot) == 1){
-            use <- sample(1:ncol(Y), replace=T)
-            Y.boot <- Y[,use]
-            X1.boot <- X1[use,]
-            X2.boot <- X2[use,]
-          }
-          index1.boot <- colSums(Y.boot[2:4,]) >= 1
-          index2.boot <- colSums(Y.boot[3:4,]) >= 1
-          phat.X.boot <- list(X1 = cbind((colSums(Y.boot[3:4,])/colSums(Y.boot[2:4,]))[index1.boot],
-                                         X1.boot[index1.boot,]),
-                              X2 = cbind(((Y.boot[3,])/colSums(Y.boot[3:4,]))[index2.boot],
-                                         X2.boot[index2.boot,]))
-          
-          
-          
-          phat.X.boot <- lapply(phat.X.boot, as.data.frame)
-          if(length(unique(phat.X.boot$X1[,1])) == 2){
-            phat.X.boot$X1[,1] <- as.factor(phat.X.boot$X1[,1])
-            type1 <- "prob"
-          }else{
-            type1 <- "response"
-          }
-          if(length(unique(phat.X.boot$X1[,1])) == 2){
-            phat.X.boot$X2[,1] <- factor(phat.X.boot$X2[,1]); type2 <- "prob"
-          }else{
-            type2 <- "response"
-          }
-          
-          m1 <- randomForest(y=phat.X.boot$X1[,1], x=phat.X.boot$X1[,-1])
-          m2 <- randomForest(y=phat.X.boot$X2[,1], x=phat.X.boot$X2[,-1])
-          
-          phat.out <- list(PRhat = predict(m1, newdata=X1, type=type1),
-                           PFhat = predict(m2, newdata=X2, type=type2))
-          
-          if(type1 == "prob"){phat.out$PRhat <- phat.out$PRhat[,2]}
-          if(type2 == "prob"){phat.out$PFhat <- phat.out$PFhat[,2]}
-          
-          
-          
-          Phat.boot[i,] <- unlist(phat.out)
-        }
-        SIGMA <- cov(Phat.boot)
       }
-      
       Dtheta <- eval_gr_qll.i(out$estimate, Phat0$PRhat, Phat0$PFhat, Y, regr)
+      # Dtheta <- numDeriv::hessian(QLL.jo, out$estimate, PRhat=Phat0$PRhat, PFhat=Phat0$PFhat, Y=Y, regr=regr)
       Dtheta.theta <- crossprod(Dtheta)
-      Dtheta.theta.inv <- solve(Dtheta.theta)
+      Dtheta.theta.inv <- tryCatch(solve(Dtheta.theta),
+                                   error=function(x){
+                                     warning("OPG is possibly singular, using Pseudoinverse");
+                                     return(MASS::ginv(Dtheta.theta))
+                                   })
       
       Dp <- eval_gr_qll.ip(Phat0$PRhat, Phat0$PFhat, out$est, Y, regr) #NAs are appearing here
       Dtheta.p <- crossprod(Dtheta,Dp) 

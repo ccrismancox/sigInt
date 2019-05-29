@@ -5,7 +5,8 @@
 \title{Predicted probabilities and comparative statics for signaling games}
 \usage{
 \method{predict}{sigfit}(object, newdata, new.theta, type = c("actions",
-  "outcomes"), na.action = na.pass, control = list(), parallel = FALSE)
+  "outcomes"), na.action = na.pass, control = list(),
+  parallel = FALSE)
 }
 \arguments{
 \item{object}{a fitted model of class \code{sigfit}.}

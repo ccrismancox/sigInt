@@ -3,7 +3,7 @@
 #' 
 print.sigfit <- function(x){
   oldx <- x
-  METHOD <- ifelse(x$method=="pl", "Pseudo-likelihood", "Nested-psuedo-likelihood")
+  METHOD <- ifelse(x$method=="pl", "Pseudo-likelihood", "Nested-pseudo-likelihood")
   
   cat("\nEstimated parameters of the Crisis Siginaling Model\n\nCALL:\n\n")
   print(x$call)

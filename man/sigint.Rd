@@ -6,8 +6,8 @@
 \usage{
 sigint(formulas, data, subset, na.action, method = c("npl", "pl"),
   npl.maxit = 25, npl.tol = 1e-07, npl.trace = FALSE, start.beta,
-  maxlik.method = "NR", phat, phat.formulas, pl.vcov = FALSE, phat.vcov,
-  seed = 12345, maxlik.options = list())
+  maxlik.method = "NR", phat, phat.formulas, pl.vcov = FALSE,
+  phat.vcov, seed = 12345, maxlik.options = list())
 }
 \arguments{
 \item{formulas}{a Formula object four variables on the left-hand side and 

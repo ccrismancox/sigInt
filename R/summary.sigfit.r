@@ -11,7 +11,7 @@
 #' @seealso \code{\link{print.summary.sigfit}}.
 #' @include convergence.r
 #' @export
-summary.sigfit <- function(object, vcov)
+summary.sigfit <- function(object, vcov,...)
 {
   if(object$method=="pl" && is.null(object$vcov) && missing(vcov)){
     cat("\nPsuedo-likelihood method was used with pl.vcov=FALSE and no user vcov is supplied\nOnly returning point estimates\n")
@@ -84,17 +84,17 @@ print.summary.sigfit <- function(x)
 
 
 #' @export
-coef.sigfit <- function(object){
+coef.sigfit <- function(object,...){
   return(object$coefficients)
 }
 
 #' @export
-vcov.sigfit <- function(object){
+vcov.sigfit <- function(object,...){
   return(object$vcov)
 }
 
 #' @export
-logLik.sigfit <- function(object){
+logLik.sigfit <- function(object,...){
   out <- object$logLik
   attr(out, "df") <- length(object$coefficients)
   attr(out, "nobs") <- length(object$Phat$PRhat)
@@ -103,7 +103,7 @@ logLik.sigfit <- function(object){
 }
 
 #' @export
-logLik.summary.sigfit <- function(object){
+logLik.summary.sigfit <- function(object,...){
   out <- object$logLik
   attr(out, "df") <- nrow(object$coefficients)
   attr(out, "nobs") <- object$ngames
@@ -112,7 +112,7 @@ logLik.summary.sigfit <- function(object){
 }
 
 #' @export
-AIC.sigfit <- function(object){
+AIC.sigfit <- function(object,...){
   k <- length(object$coefficients)
   L <- object$logLik
   return(-2*k - 2*L)
@@ -120,7 +120,7 @@ AIC.sigfit <- function(object){
 
 
 #' @export
-AIC.summary.sigfit <- function(object){
+AIC.summary.sigfit <- function(object,...){
   k <- nrow(object$coef.table)
   L <- object$logLik
   return(-2*k - 2*L)

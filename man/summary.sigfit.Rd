@@ -4,7 +4,7 @@
 \alias{summary.sigfit}
 \title{Summarize a fitted crisis signaling model}
 \usage{
-\method{summary}{sigfit}(object, vcov)
+\method{summary}{sigfit}(object, vcov, ...)
 }
 \arguments{
 \item{object}{a fitted model of class \code{sigfit}}

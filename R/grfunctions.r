@@ -68,13 +68,18 @@ eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
   PBdv[PBdv>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
   WBinner <- as.numeric((-param$CB + param$VB*(-PFhat + 1) + param$barWB*PFhat)/PFhat)
   
-  invpWBinner <- (pnorm(WBinner, lower=F) )
-  invpWBinner[invpWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
-  invpWBinner[invpWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
-  
-  pWBinner <- (pnorm(WBinner) )
-  pWBinner[pWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
-  pWBinner[pWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
+  # invpWBinner <- (pnorm(WBinner, lower=F) )
+  # invpWBinner[invpWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
+  # invpWBinner[invpWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
+  # 
+  # pWBinner <- (pnorm(WBinner) )
+  # pWBinner[pWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
+  # pWBinner[pWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
+   
+  dCB.denom <- (PFhat*(pnorm(WBinner, lower=F))) 
+  dCB.denom[dCB.denom<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)
+  dCB.denom2 <- (PFhat*pWBinner)
+  dCB.denom2[dCB.denom2<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)
   
   
   dWA4.denom <- (pC*(1 - PBdv/pC)*pWBinner)  # LOOK AT THIS	
@@ -123,9 +128,9 @@ eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
   dVA  <- apply(regr$VA, 2, function(x){t(as.numeric(x)*t(dVA))*as.numeric(Y)})
   
   dVB <- rbind(0,
-               -(-PFhat + 1)*dnorm(WBinner)/(PFhat*invpWBinner),
-               (-PFhat + 1)*dnorm(WBinner)/(PFhat*pWBinner),
-               (-PFhat + 1)*dnorm(WBinner)/(PFhat*pWBinner)
+               -(-PFhat + 1)*dnorm(WBinner)/(dCB.denom),
+               (-PFhat + 1)*dnorm(WBinner)/(dCB.denom2),
+               (-PFhat + 1)*dnorm(WBinner)/(dCB.denom2)
   )  
   dVB  <- apply(regr$VB, 2, function(x){t(as.numeric(x)*t(dVB))*as.numeric(Y)})
   
@@ -138,10 +143,7 @@ eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
   )
   dSA  <- apply(regr$SA, 2, function(x){t(as.numeric(x)*t(dSA))*as.numeric(Y)})
   
-  dCB.denom <- (PFhat*(pnorm(WBinner, lower=F))) 
-  dCB.denom[dCB.denom<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)
-  dCB.denom2 <- (PFhat*pWBinner)
-  dCB.denom2[dCB.denom2<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)
+
   dCB <- rbind(0,
                dnorm(WBinner)/dCB.denom,
                -dnorm(WBinner)/dCB.denom2,

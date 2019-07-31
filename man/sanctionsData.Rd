@@ -60,7 +60,7 @@ Unpublished Manuscript.
 Gibler, Douglas M. 2009. International military alliances, 1648-2008. CQ Press.  
  
  Marshall, Monty G., and Keith Jaggers. 2013. "Polity IV Project." 
- \code{\link{http://www.systemicpeace.org/polity/polity4.htm}}.
+ \url{http://www.systemicpeace.org/polity/polity4.htm}.
  
 Morgan, T. Clifton, Navin Bapat, and Yoshi Kobayashi. 2014.
 "The Threat and Imposition of Sanctions: Updating the TIES dataset." 

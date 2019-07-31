@@ -28,6 +28,7 @@
 #' @param parallel logical. Should the comparative statics be computed in parallel, requires the
 #' \code{\link[parallel]{parallel}}
 #' package be installed. Parallelization is done using \code{\link[parallel]{parSapply}}.
+#' @param ... Additional arguments (not currently used)
 #' @return An object of class \code{sigProb} containing three elements:
 #' \describe{
 #'  \item{\code{predicted}}{data frame of predicted probabilities. The first column of this data frame is 
@@ -87,6 +88,8 @@
 #' will use the function \code{\link[parallel]{parSapply}} is used.
 #' @seealso \code{\link{plot.sigProb}}, \code{\link{generate.eq}}
 #' @import Formula
+#' @import stats
+#' @import utils
 #' @export
 #'
 #' @examples
@@ -103,8 +106,9 @@
 #' ## Using Nested-Pseudo Likelihood  with default first stage                 
 #' fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
 #'
+#' \dontrun{
 #' p.out <- predict(fit1, parallel=TRUE) #fitted choice probabilites for all observations
-#' 
+#' }
 #'
 #' #outcome probabilities for first five games
 #' p1 <- predict(fit1, newdata=sanctionsData[1:5,], type="outcome")
@@ -117,7 +121,7 @@
 #' 
 
 predict.sigfit <- function(object, newdata, new.theta, type=c("actions", "outcomes"),
-                           na.action=na.pass, control=list(), parallel=FALSE){
+                           na.action=na.pass, control=list(), parallel=FALSE,...){
   
   control.default <- list(gridsize=1e4, comp=F, tol=1e-8)
   control <- modifyList(control.default, control)

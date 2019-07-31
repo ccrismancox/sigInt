@@ -53,7 +53,7 @@
 ##' Gibler, Douglas M. 2009. International military alliances, 1648-2008. CQ Press.  
 ##'  
 ##'  Marshall, Monty G., and Keith Jaggers. 2013. "Polity IV Project." 
-##'  \code{\link{http://www.systemicpeace.org/polity/polity4.htm}}.
+##'  \url{http://www.systemicpeace.org/polity/polity4.htm}.
 ##'  
 ##' Morgan, T. Clifton, Navin Bapat, and Yoshi Kobayashi. 2014.
 ##' "The Threat and Imposition of Sanctions: Updating the TIES dataset." 
@@ -71,18 +71,3 @@
 NULL
 
 
-
-##' First-stage covariance matrix
-##' 
-##' Bootstrapped covariance matrix (\eqn{836 \times 836}) for
-##'  \code{sanctionsData$PRhat} and \code{sanctionsData$PFhat}.
-##'  Rows and columns are ordered \eqn{[p_{R,d}, p_{F,d}]}, for 
-##'  games \eqn{d=1,...,418}.
-##' Only used for examples and replication.
-##' 
-##' @seealso \code{\link{sanctionsData}}, \code{\link{sigint}}
-##' @name SIGMA
-##' @usage data(SIGMA)
-##' @docType data
-##' @keywords data
-NULL

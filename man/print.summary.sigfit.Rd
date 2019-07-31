@@ -4,10 +4,12 @@
 \alias{print.summary.sigfit}
 \title{Print the summary table for a \code{sigfit} object.}
 \usage{
-\method{print}{summary.sigfit}(x)
+\method{print}{summary.sigfit}(x, ...)
 }
 \arguments{
 \item{x}{a \code{summary.sigfit} object.}
+
+\item{...}{Additional arguments (not currently used)}
 }
 \description{
 Prints the summary regression table for a model fitted with \code{\link{sigint}}.

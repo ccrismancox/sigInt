@@ -4,17 +4,27 @@
 \alias{plot.sigProb}
 \title{Plot predicted probabilities from a \code{sigProb} object.}
 \usage{
-\method{plot}{sigProb}(object, prob, xvar, col = "blue", ylab, xlab,
-  pch = 16, main = "", ...)
+\method{plot}{sigProb}(x, prob, xvar, main = "", ylab, xlab,
+  col = "blue", pch = 16, ...)
 }
 \arguments{
-\item{object}{an object of class \code{sigProb}, which is obtained by using \code{\link{predict.sigfit}} on a model fit using \code{\link{sigint}}.}
+\item{x}{an object of class \code{sigProb}, which is obtained by using \code{\link{predict.sigfit}} on a model fit using \code{\link{sigint}}.}
 
 \item{prob}{A string providing the column name for the column of \code{object$predicted} should be used as the outcome or probability of interest.}
 
 \item{xvar}{A string providing the column name of the column (from either object$model or object$par) that provides the "x-variable" in the plot.}
 
-\item{col}{A string used to}
+\item{main}{The title of the plot}
+
+\item{ylab}{The y-axis label}
+
+\item{xlab}{The x-axis label}
+
+\item{col}{The color of the plot}
+
+\item{pch}{An integer or character used to choose the type of points used in the plot}
+
+\item{...}{Additional arguments and graphical parameters used by \code{\link{plot}} and \code{\link{par}}}
 }
 \description{
 This method takes a \code{sigProb} object produced by
@@ -45,5 +55,5 @@ plot(p1.a, prob="pc", ylab="Pr Challenge", xlab="Audience Costs", type="l")
 
 }
 \seealso{
-\code{\link{predict.sigfit}} \code{\link{generate.eq}}
+\code{\link{predict.sigfit}} \code{\link{generate.eq}} \code{\link{plot}} \code{\link{par}}
 }

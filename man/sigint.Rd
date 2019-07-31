@@ -12,7 +12,7 @@ sigint(formulas, data, subset, na.action, fixed.par = list(),
 }
 \arguments{
 \item{formulas}{a \code{Formula} object four variables on the left-hand side and 
-seven (7)  separateright-hand sides. See "Details" and examples below.}
+seven (7) separate right-hand sides. See "Details" and examples below.}
 
 \item{data}{a data frame containing the variables used to fit the model.
 Each row of the data frame describes an individual game
@@ -82,7 +82,7 @@ Used to set the seed for the random forest and for drawing the the starting valu
 The PL can be sensitive to starting value, so this makes results reproducible.
 The NPL is less sensitive, but we always recommend checking the first order conditions.}
 
-\item{maxLik.options}{a list of options to be passed to 
+\item{maxlik.options}{a list of options to be passed to 
 \code{\link[maxLik]{maxLik}}  for fitting the model.}
 }
 \value{
@@ -273,13 +273,14 @@ fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 summary(fit2)
 
 ## Using Pseudo Likelihood with user made first stage and user covariance
-Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
-data(SIGMA)
-
+## SIGMA is a bootstrapped first-stage covariance matrix (not provided)
+\dontrun{
 fit3 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat, phat.vcov=SIGMA, pl.vcov=TRUE)
 summary(fit3)
+}
 
-## Using Pseudo Likelihood with default first stage and bootstrapped standard errors
+## Using Pseudo Likelihood with default first stage and 
+## bootstrapped standard errors for the first stage covariance
 fit4 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
 summary(fit4)
 

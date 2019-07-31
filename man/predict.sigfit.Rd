@@ -6,7 +6,7 @@
 \usage{
 \method{predict}{sigfit}(object, newdata, new.theta, type = c("actions",
   "outcomes"), na.action = na.pass, control = list(),
-  parallel = FALSE)
+  parallel = FALSE, ...)
 }
 \arguments{
 \item{object}{a fitted model of class \code{sigfit}.}
@@ -36,6 +36,8 @@ or outcomes (returns \eqn{SQ}, \eqn{CD}, \eqn{SF}, and  \eqn{BD}).}
 \item{parallel}{logical. Should the comparative statics be computed in parallel, requires the
 \code{\link[parallel]{parallel}}
 package be installed. Parallelization is done using \code{\link[parallel]{parSapply}}.}
+
+\item{...}{Additional arguments (not currently used)}
 }
 \value{
 An object of class \code{sigProb} containing three elements:
@@ -116,8 +118,9 @@ f1 <- sq+cd+sf+bd ~ sqrt(senderecondep) + senderdemocracy + contig + ally -1|#SA
 ## Using Nested-Pseudo Likelihood  with default first stage                 
 fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
 
+\dontrun{
 p.out <- predict(fit1, parallel=TRUE) #fitted choice probabilites for all observations
-
+}
 
 #outcome probabilities for first five games
 p1 <- predict(fit1, newdata=sanctionsData[1:5,], type="outcome")

@@ -3,12 +3,22 @@ Title: Estimate the parameters of a discrete crisis-bargaining game
 Version: 0.0.0.9000
 Authors@R: c(person("Casey", "Crisman-Cox", email = "ccrismancox@gmail.com", role = c("aut", "cre")),  person("Michael", "Gibilisco", email = "michael.gibilisco@caltech.edu", role = c("aut")))
 Description: Provides pseudo-likelihood methods for analyzing the canonical signaling game in international relations.
-Depends: R (>= 3.4.4)
+Depends: R (>= 3.4.0)
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+Maintainer: Casey Crisman-Cox <ccrismancox@gmail.com>
+Author: Casey Crisman-Cox [aut, cre], 
+  Michael Gibilisco
 RoxygenNote: 6.1.1.9000
-Imports: randomForest, stringr, pbivnorm, Formula, maxLik, xtable
+Imports: 
+    randomForest,
+    stringr,
+    pbivnorm,
+    Formula,
+    maxLik,
+    xtable,
+    MASS
 Suggests: parallel
 Collate:
     'convergence.r'

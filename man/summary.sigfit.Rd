@@ -10,6 +10,8 @@
 \item{object}{a fitted model of class \code{sigfit}}
 
 \item{vcov}{a substitute variance covariance matrix}
+
+\item{...}{Additional arguments (not currently used)}
 }
 \value{
 An object of class \code{summary.sigfit}.  This object

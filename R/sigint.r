@@ -6,7 +6,7 @@
 #' containing \eqn{D} games, where each game is  observed one or more times.
 #' 
 #' @param formulas a \code{Formula} object four variables on the left-hand side and 
-#'   seven (7)  separateright-hand sides. See "Details" and examples below.
+#'   seven (7) separate right-hand sides. See "Details" and examples below.
 #' @param data a data frame containing the variables used to fit the model.
 #'   Each row of the data frame describes an individual game
 #'   \eqn{d = 1, 2, ..., D}. Each row \eqn{d}  should be a summary of all of the
@@ -60,7 +60,7 @@
 #'   Used to set the seed for the random forest and for drawing the the starting values.
 #'   The PL can be sensitive to starting value, so this makes results reproducible.
 #'   The NPL is less sensitive, but we always recommend checking the first order conditions.
-#' @param maxLik.options a list of options to be passed to 
+#' @param maxlik.options a list of options to be passed to 
 #'   \code{\link[maxLik]{maxLik}}  for fitting the model.
 #' @details The model corresponds to an extensive-form, 
 #'   discrete-crisis-bargaining game from Lewis and Schultz (2003): 
@@ -254,19 +254,23 @@
 #' summary(fit2)
 #' 
 #' ## Using Pseudo Likelihood with user made first stage and user covariance
-#' Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
-#' data(SIGMA)
-#' 
+#' ## SIGMA is a bootstrapped first-stage covariance matrix (not provided)
+#' \dontrun{
 #' fit3 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat, phat.vcov=SIGMA, pl.vcov=TRUE)
 #' summary(fit3)
+#' }
 #' 
-#' ## Using Pseudo Likelihood with default first stage and bootstrapped standard errors
+#' ## Using Pseudo Likelihood with default first stage and 
+#' ## bootstrapped standard errors for the first stage covariance
 #' fit4 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
 #' summary(fit4)
 #' 
 #' @import pbivnorm
 #' @import randomForest
 #' @import Formula
+#' @import stats
+#' @import utils
+#' @import MASS
 #' @export
 sigint <- function(formulas, data, subset, na.action,
                    fixed.par=list(),

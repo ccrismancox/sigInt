@@ -3,11 +3,17 @@
 #' This method takes a \code{sigProb} object produced by
 #' \code{\link{predict.sigfit}} and plots the comparative static(s) of interest.
 #'
-#' @param object an object of class \code{sigProb}, which is obtained by using \code{\link{predict.sigfit}} on a model fit using \code{\link{sigint}}.
+#' @param x an object of class \code{sigProb}, which is obtained by using \code{\link{predict.sigfit}} on a model fit using \code{\link{sigint}}.
 #' @param prob A string providing the column name for the column of \code{object$predicted} should be used as the outcome or probability of interest.
 #' @param xvar A string providing the column name of the column (from either object$model or object$par) that provides the "x-variable" in the plot.
-#' @param col A string used to 
-#' @seealso \code{\link{predict.sigfit}} \code{\link{generate.eq}}
+#' @param ylab The y-axis label
+#' @param xlab The x-axis label 
+#' @param main The title of the plot
+#' @param col The color of the plot
+#' @param pch An integer or character used to choose the type of points used in the plot
+#' @param ... Additional arguments and graphical parameters used by \code{\link{plot}} and \code{\link{par}}
+#' @seealso \code{\link{predict.sigfit}} \code{\link{generate.eq}} \code{\link{plot}} \code{\link{par}}
+#' @import graphics
 #' @export
 #' 
 #' @examples
@@ -35,8 +41,8 @@
 #' 
 #' 
 
-plot.sigProb <- function(object, prob, xvar, col="blue", ylab, xlab, pch=16, main="", ...){
-
+plot.sigProb <- function(x, prob, xvar, main="", ylab, xlab,  col="blue", pch=16,  ...){
+    object <- x
     if(missing(prob)){
         stop("The y-variable prob must be specified")
     }else{

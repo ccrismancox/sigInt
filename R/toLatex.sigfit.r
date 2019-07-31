@@ -16,6 +16,8 @@
 #' returns no stars at all.
 #' @param caption a string to be used as the table's caption.
 #' @param label a string to be used as the table's LaTeX \code{label} argument.
+#' @param align a string to indicate the alignment of each column in the table.  
+#' Passed directly to the LaTeX \code{tabular} options.
 #' @param digits how many digits after the decimal point should be displayed? Default 2.
 #' @param se.note a string containing a note for the bottom of the table. 
 #' Default is the common "Standard errors in parenthesis.
@@ -41,7 +43,6 @@
 #' For a full list of these options see \code{\link[xtable]{print.xtable}}.
 #' 
 #' @seealso \code{\link[xtable]{xtable}}, \code{\link[xtable]{print.xtable}}
-#' @export
 #' @examples
 #' data("sanctionsData")
 #' f1 <- sq+cd+sf+bd ~ sqrt(senderecondep) + senderdemocracy + contig + ally -1|#SA
@@ -59,38 +60,34 @@
 #' Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
 #' fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 #' 
-#' ## Using Pseudo Likelihood with user made first stage and user covariance
-#' Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
-#' data(SIGMA)
-#' 
-#' fit3 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat, phat.vcov=SIGMA, pl.vcov=TRUE)
-#' 
 #' ## Using Pseudo Likelihood with default first stage and bootstrapped standard errors
-#' fit4 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
+#' fit3 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
 #'
 #' ## Simple regression table
-#' toLatex(fit1, fit2, fit3, fit4)
+#' toLatex(fit1, fit2, fit3)
 #'
-#' ## More options, including the SEs from fit3 for fit2
-#' toLatex(fit1, fit2, fit3, fit4,
+#' ## More options: User supplied standard errors
+#' toLatex(fit1, fit2, fit3,
 #'         se.list=list(sqrt(diag(vcov(fit1))),
 #'                      sqrt(diag(vcov(fit3))),
-#'                      sqrt(diag(vcov(fit3))),
-#'                      sqrt(diag(vcov(fit4)))),
+#'                      sqrt(diag(vcov(fit3)))),
 #'         stars="all",
 #'         caption = "Economic Sanctions",
 #'         label = "tab:sanctions",
-#'         model.names = c("NPL", "PL", "PL", "PL"),
+#'         model.names = c("NPL", "PL", "PL"),
 #'         print.xtable.options=list(booktabs=TRUE))
 #' 
 #' \dontrun{
 #' ## More options, including printing to a file
-#' toLatex(fit1, fit2, fit3, fit4,
+#' toLatex(fit1, fit2, fit3,
 #'         caption = "Economic Sanctions",
 #'         label = "tab:sanctions",
-#'         model.names = c("NPL", "PL", "PL", "PL"),
+#'         model.names = c("NPL", "PL", "PL"),
 #'         print.xtable.options=list(file="myTable.tex"))}
-toLatex.sigfit <- function(..., 
+#'
+#' @export
+
+toLatex <- function(..., 
                            se.list, 
                            stars=c("default", "all", "none"),
                            caption="",

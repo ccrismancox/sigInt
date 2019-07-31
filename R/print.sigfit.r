@@ -1,7 +1,7 @@
 #' @include convergence.r
 #' @export
 #' 
-print.sigfit <- function(x){
+print.sigfit <- function(x, ...){
   oldx <- x
   METHOD <- ifelse(x$method=="pl", "Pseudo-likelihood", "Nested-pseudo-likelihood")
   

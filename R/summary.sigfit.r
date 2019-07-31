@@ -6,6 +6,7 @@
 #' 
 #' @param object a fitted model of class \code{sigfit}
 #' @param vcov a substitute variance covariance matrix 
+#' @param ... Additional arguments (not currently used)
 #' @return An object of class \code{summary.sigfit}.  This object
 #' contains the information needed to print the summary
 #' @seealso \code{\link{print.summary.sigfit}}.
@@ -54,9 +55,10 @@ summary.sigfit <- function(object, vcov,...)
 #' Prints the standard regression results table from a fitted strategic model,
 #' along with the log-likelihood and number of games used in estimation.
 #' @param x a \code{summary.sigfit} object.
+#' @param ... Additional arguments (not currently used)
 #' @include convergence.r
 #' @export
-print.summary.sigfit <- function(x)
+print.summary.sigfit <- function(x, ...)
 {
   METHOD <- ifelse(x$method=="pl", "Pseudo-likelihood", "Nested-psuedo-likelihood")
   

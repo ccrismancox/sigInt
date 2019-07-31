@@ -160,7 +160,7 @@ generate.eq <- function(formulas, data, theta, type=c("actions", "outcomes"),
   
   
   
-  Ulist <- apply(as.matrix(par), 1, vec2U.regr, regr=regr)
+  Ulist <- apply(as.matrix(par), 1, vec2U.regr, regr=regr,  fixed.par=list())
   Ulist <- unlist(Ulist, recursive = F)
   if(npar>1){#Situation where we vary theta, so we can clean this up
     Ulist <- sapply(unique(names(Ulist)), 

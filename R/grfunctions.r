@@ -22,7 +22,7 @@ delPbivnorm <- function(x1, x2, rho=0){
 }
 
 
-eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
+eval_gr_qll <- function(x,PRhat,PFhat,Y,regr, fixed.par){
   # here x = (theta,p)
   ##EQ[,1]= pR
   ##EQ[,2]= pC
@@ -30,7 +30,7 @@ eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
   M <- dim(Y)[2]
   
   
-  param <-vec2U.regr(x,regr)
+  param <-vec2U.regr(x,regr, fixed.par)
   
   
   c <- cStar.jo(PRhat,param)
@@ -68,14 +68,14 @@ eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
   PBdv[PBdv>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
   WBinner <- as.numeric((-param$CB + param$VB*(-PFhat + 1) + param$barWB*PFhat)/PFhat)
   
-  # invpWBinner <- (pnorm(WBinner, lower=F) )
-  # invpWBinner[invpWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
-  # invpWBinner[invpWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
-  # 
-  # pWBinner <- (pnorm(WBinner) )
-  # pWBinner[pWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
-  # pWBinner[pWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS 
-   
+  invpWBinner <- (pnorm(WBinner, lower=F) )
+  invpWBinner[invpWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
+  invpWBinner[invpWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS
+
+  pWBinner <- (pnorm(WBinner) )
+  pWBinner[pWBinner<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps) # LOOK AT THIS
+  pWBinner[pWBinner>= (1-sqrt(.Machine$double.eps))] <- 1-sqrt(.Machine$double.eps) # LOOK AT THIS
+
   dCB.denom <- (PFhat*(pnorm(WBinner, lower=F))) 
   dCB.denom[dCB.denom<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)
   dCB.denom2 <- (PFhat*pWBinner)
@@ -165,7 +165,7 @@ eval_gr_qll <- function(x,PRhat,PFhat,Y,regr){
 
 
 
-eval_gr_qll.i <- function(x,PRhat,PFhat,Y,regr){
+eval_gr_qll.i <- function(x,PRhat,PFhat,Y,regr, fixed.par){
   # here x = (theta,p)
   ##EQ[,1]= pR
   ##EQ[,2]= pC
@@ -173,7 +173,7 @@ eval_gr_qll.i <- function(x,PRhat,PFhat,Y,regr){
   M <- dim(Y)[2]
   
   
-  param <-vec2U.regr(x,regr)
+  param <-vec2U.regr(x,regr, fixed.par)
   
   
   c <- cStar.jo(PRhat,param)
@@ -306,14 +306,14 @@ eval_gr_qll.i <- function(x,PRhat,PFhat,Y,regr){
 
 
 
-eval_gr_qll.ip <- function(PRhat, PFhat, x, Y,regr){
+eval_gr_qll.ip <- function(PRhat, PFhat, x, Y,regr, fixed.par){
   # here x = (theta,p)
   ##EQ[,1]= pR
   ##EQ[,2]= pC
   ##EQ[,3]= pF
   M <- dim(Y)[2]
   
-  param <-vec2U.regr(x,regr)
+  param <-vec2U.regr(x,regr, fixed.par)
   
   
   c <- cStar.jo(PRhat,param)
@@ -379,14 +379,14 @@ eval_gr_qll.ip <- function(PRhat, PFhat, x, Y,regr){
 }
 
 
-dPsiDp <- function(PRhat, PFhat, x, Y,regr){
+dPsiDp <- function(PRhat, PFhat, x, Y,regr, fixed.par){
   # here x = (theta,p)
   ##EQ[,1]= pR
   ##EQ[,2]= pC
   ##EQ[,3]= pF
   M <- dim(Y)[2]
   
-  param <-vec2U.regr(x,regr)
+  param <-vec2U.regr(x,regr, fixed.par)
   
   
   c <- cStar.jo(PRhat,param)
@@ -438,14 +438,14 @@ dPsiDp <- function(PRhat, PFhat, x, Y,regr){
 
 
 
-dPsi.dTheta <- function(x, PRhat, PFhat, Y, regr){
+dPsi.dTheta <- function(x, PRhat, PFhat, Y, regr, fixed.par){
   # here x = (theta,p)
   ##EQ[,1]= pR
   ##EQ[,2]= pC
   ##EQ[,3]= pF
   M <- dim(Y)[2]
   
-  param <-vec2U.regr(x,regr)
+  param <-vec2U.regr(x,regr, fixed.par)
   
   
   c <- cStar.jo(PRhat,param)

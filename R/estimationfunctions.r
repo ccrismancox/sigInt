@@ -13,7 +13,7 @@ vec2U.norm <- function(x,X=matrix(0)){
 }
 
 
-vec2U.regr <- function(x,regr){
+vec2U.regr <- function(x,regr, fixed.par){
   idx0 <- lapply(regr, ncol)
   idx0 <- sapply(idx0, function(x){if(is.null(x)){0}else{x}})
   idx1 <- cumsum(idx0)
@@ -42,6 +42,10 @@ vec2U.regr <- function(x,regr){
     CB = regr[[3]] %*% x[indx[[3]]],
     sig=1
   )	
+  if(length(fixed.par)>0){
+    fixed.par <- lapply(fixed.par, rep, max(sapply(regr, nrow)))
+    param <- modifyList(param, fixed.par)
+  }
   param <- lapply(param, as.numeric)
   return(param)
 }
@@ -94,9 +98,9 @@ eqProbs <- function(p, U,RemoveZeros=F){
 }
 
 
-QLL.jo  <- function(x,PRhat,PFhat,Y,regr){
+QLL.jo  <- function(x,PRhat,PFhat,Y,regr, fixed.par){
   # here x = (theta)	
-  U <- vec2U.regr(x,regr)
+  U <- vec2U.regr(x,regr, fixed.par)
   PR <- f.jo(PFhat, U)
   PR[PR<=.Machine$double.eps] <- .Machine$double.eps 
   PC <- g.jo(cStar.jo(PRhat,U),U)
@@ -113,9 +117,9 @@ QLL.jo  <- function(x,PRhat,PFhat,Y,regr){
 }
 
 
-QLL.jo_i  <- function(x,PRhat,PFhat,Y,regr){
+QLL.jo_i  <- function(x,PRhat,PFhat,Y,regr, fixed.par){
   # here x = (theta)	
-  U <- vec2U.regr(x,regr)
+  U <- vec2U.regr(x,regr, fixed.par)
   PR <- f.jo(PFhat, U)
   PR[PR<=.Machine$double.eps] <- .Machine$double.eps 
   PC <- g.jo(cStar.jo(PRhat,U),U)
@@ -133,11 +137,11 @@ QLL.jo_i  <- function(x,PRhat,PFhat,Y,regr){
 
 
 
-QLL.jo_ip  <- function(x,Phat,Y,regr){
+QLL.jo_ip  <- function(x,Phat,Y,regr, fixed.par){
   PRhat <- Phat[1:ncol(Y)]
   PFhat <- Phat[(ncol(Y)+1):length(Phat)]
   # here x = (theta)	
-  U <- vec2U.regr(x,regr)
+  U <- vec2U.regr(x,regr,  fixed.par)
   PR <- f.jo(PFhat, U)
   PR[PR<=.Machine$double.eps] <- .Machine$double.eps 
   PC <- g.jo(cStar.jo(PRhat,U),U)

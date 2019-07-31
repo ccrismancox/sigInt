@@ -5,8 +5,8 @@
 #' Crisman-Cox and Gibilisco (2018). Throughout, we refer to the data as
 #' containing \eqn{D} games, where each game is  observed one or more times.
 #' 
-#' @param formulas a Formula object four variables on the left-hand side and 
-#'   seven separate (7) right-hand sides. See "Details" and examples below.
+#' @param formulas a \code{Formula} object four variables on the left-hand side and 
+#'   seven (7)  separateright-hand sides. See "Details" and examples below.
 #' @param data a data frame containing the variables used to fit the model.
 #'   Each row of the data frame describes an individual game
 #'   \eqn{d = 1, 2, ..., D}. Each row \eqn{d}  should be a summary of all of the
@@ -16,6 +16,12 @@
 #'   observations to be used in fitting the model.
 #' @param na.action how do deal with missing data (\code{NA}s).  Defaults to the 
 #'   \code{na.action} setting of \code{\link[base]{options}} (typically \code{na.omit}).
+#' @param fixed.par a list with up to seven (7) named elements for normalizing payoffs to non-zero values.  
+#'    Names must match a payoff name as listed in "Details."
+#'    Each named element should contain a single number that is the fixed (not estimated) value of that payoff.
+#'    For example, to fix each side's victory-without-fighting payoff to 1
+#'     use \code{fixed.par=list(VA=1, VB=1)} and set their portions of the \code{formulas} to zero.
+#'    To normalize a payoff to zero, you only need to specify it has a zero in the \code{formulas}.
 #' @param method whether to use the nested-pseudo-likelihood (\code{"npl"}, default) or
 #'   the pseudo-likelihood method for fitting the model. See "Details" for more 
 #'   information.
@@ -108,7 +114,9 @@
 #'    \item \eqn{W_A} is a function  of the variables \code{x1}, \code{x2} and a constant term.
 #'    \item \eqn{W_B} is a function of the variable  \code{x1} and a constant term.
 #'   \item \eqn{a} is a constant term.
-#'   \item \eqn{V_B} is fixed to 0. }
+#'   \item \eqn{V_B} is fixed to 0 (or a non-zero value set by \code{fixed.par}. }
+#
+#'
 #'
 #'   Each row of the data frame should be a summary of the covariates and outcomes associated with that particular game.
 #'   When each game is observed only once, then this will resemble an ordinary dyad-time data frame.
@@ -235,7 +243,7 @@
 #'                     targetdemocracy + lncaprat| #barWB
 #'                     senderdemocracy| #bara
 #'                     -1#VB
-#
+#'
 #' ## Using Nested-Pseudo Likelihood  with default first stage                 
 #' fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
 #' summary(fit1)
@@ -261,6 +269,7 @@
 #' @import Formula
 #' @export
 sigint <- function(formulas, data, subset, na.action,
+                   fixed.par=list(),
                    method=c("npl", "pl"),
                    npl.maxit=25,
                    npl.tol=1e-7,
@@ -341,6 +350,16 @@ sigint <- function(formulas, data, subset, na.action,
     
   }
   
+  
+  if(length(fixed.par)>0){
+    if(any(sapply(regr[names(fixed.par)], ncol) != 0)){
+      stop(paste("The following payoff is fixed but their formula component is not 0",
+        names(which(sapply(regr[names(list(VA=1, VB=1))], ncol) != 0)), "\n"))
+    }
+  }
+  
+  
+  
   #######First stage######
   init.seed <- runif(1) #just to make sure .Random exists
   old.seed <- .Random.seed
@@ -374,12 +393,14 @@ sigint <- function(formulas, data, subset, na.action,
       X1 <- model.matrix(phat.formulas, data=mf.phat, rhs=1)
       X2 <- model.matrix(phat.formulas, data=mf.phat, rhs=2)
     }
-    X1 <- X1[,which(colnames(X1) != "(Intercept)")]
-    X2 <- X2[,which(colnames(X2) != "(Intercept)")]
+    X1 <- X1[,which(colnames(X1) != "(Intercept)"), drop=FALSE]
+    X2 <- X2[,which(colnames(X2) != "(Intercept)"), drop=FALSE]
     
     phat.X <- list(X1 = cbind((colSums(Y[3:4,])/colSums(Y[2:4,]))[index1], X1[index1,]),
                    X2 = cbind(((Y[3,])/colSums(Y[3:4,]))[index2], X2[index2,]))
     phat.X <- lapply(phat.X, as.data.frame)
+    names(phat.X$X1) <- c("V1", colnames(X1))
+    names(phat.X$X2) <- c("V1", colnames(X2))
     if(length(unique(phat.X$X1[,1])) == 2){
       phat.X$X1[,1] <- as.factor(phat.X$X1[,1])
       type1 <- "prob"
@@ -392,7 +413,7 @@ sigint <- function(formulas, data, subset, na.action,
       type2 <- "response"
     }
     
-    
+
     m1 <- randomForest(y=phat.X$X1[,1], x=phat.X$X1[,-1, FALSE])
     m2 <- randomForest(y=phat.X$X2[,1], x=phat.X$X2[,-1, FALSE])
     
@@ -420,8 +441,8 @@ sigint <- function(formulas, data, subset, na.action,
   names(start.beta) <- paste(u.names, ":", names(start.beta), sep="")
   
   
-  fqll <- function(x){-QLL.jo(x,phat$PRhat,phat$PFhat,Y,regr)}
-  grqll <- function(x){-eval_gr_qll(x, phat$PRhat, phat$PFhat,Y,regr)}
+  fqll <- function(x){-QLL.jo(x,phat$PRhat,phat$PFhat,Y,regr, fixed.par)}
+  grqll <- function(x){-eval_gr_qll(x, phat$PRhat, phat$PFhat,Y,regr, fixed.par)}
   
   #testing
   # cat("LL:", fqll(start.beta), "\n")
@@ -434,8 +455,7 @@ sigint <- function(formulas, data, subset, na.action,
                         control=maxlik.options)
   
   Phat0 = phat
-  eq.const.pl <- const.jo(Phat0$PRhat, vec2U.regr(out$estimate, regr))  
-  
+  eq.const.pl <- const.jo(Phat0$PRhat, vec2U.regr(x=out$estimate, regr=regr, fixed.par=fixed.par))  
   ####### NPL Procedure #####
   if(method=="npl"){
     tol = npl.tol
@@ -446,7 +466,7 @@ sigint <- function(formulas, data, subset, na.action,
     iter = 0
     
     while(eval > tol & iter < maxit){
-      Uk <- vec2U.regr(out.NPL$estimate, regr)
+      Uk <- vec2U.regr(out.NPL$estimate, regr, fixed.par)
       Pk.F <- eqProbs(Phat$PRhat, Uk, RemoveZeros = T)[,3]
       Pk.R <- pnorm((Phat$PFhat*Uk$barWB + (1-Phat$PFhat)*Uk$VB - Uk$CB)/Phat$PFhat)
       Phat.k_1 <- Phat
@@ -455,8 +475,8 @@ sigint <- function(formulas, data, subset, na.action,
                                0.0001), .9999)
       Phat$PFhat <-  pmin(pmax(Phat$PFhat,
                                0.0001), .9999)
-      fqll <- function(x){- QLL.jo(x,Phat$PRhat,Phat$PFhat,Y,regr)}
-      grqll <- function(x){- eval_gr_qll(x, Phat$PRhat, Phat$PFhat,Y,regr)}
+      fqll <- function(x){- QLL.jo(x,Phat$PRhat,Phat$PFhat,Y,regr, fixed.par)}
+      grqll <- function(x){- eval_gr_qll(x, Phat$PRhat, Phat$PFhat,Y,regr, fixed.par)}
       out.NPL.k <- try(maxLik::maxLik(start=out.NPL$est, logLik=fqll, grad=grqll,
                                       method=maxlik.method, control=maxlik.options))
       if(class(out.NPL.k[[1]])=="character" || out.NPL.k$code==100){
@@ -478,7 +498,7 @@ sigint <- function(formulas, data, subset, na.action,
     if(iter == maxit){
       warning("NPL iterations exceeded")
     }
-    Uk <- vec2U.regr(out.NPL$estimate, regr)
+    Uk <- vec2U.regr(out.NPL$estimate, regr, fixed.par)
     Pk.F <- eqProbs(Phat$PRhat, Uk, RemoveZeros = T)[,3]
     Pk.R <- pnorm((Phat$PFhat*Uk$barWB + (1-Phat$PFhat)*Uk$VB - Uk$CB)/Phat$PFhat)
     Phat.k_1 <- Phat
@@ -486,14 +506,14 @@ sigint <- function(formulas, data, subset, na.action,
     eq.const <- const.jo(Phat$PRhat, Uk)
     
     ###NPL VCOV###
-    Dtheta <- eval_gr_qll.i(out.NPL$estimate,Phat$PRhat, Phat$PFhat, Y, regr )
+    Dtheta <- eval_gr_qll.i(out.NPL$estimate,Phat$PRhat, Phat$PFhat, Y, regr, fixed.par )
     Dtheta.theta <- crossprod(Dtheta)
     
-    Dp <- eval_gr_qll.ip(Phat$PRhat, Phat$PFhat, out.NPL$est, Y, regr)
+    Dp <- eval_gr_qll.ip(Phat$PRhat, Phat$PFhat, out.NPL$est, Y, regr, fixed.par)
     Dtheta.p <- crossprod(Dtheta,Dp)
     
-    JpPsi <- dPsiDp(Phat$PRhat, Phat$PFhat, out.NPL$est, Y, regr)
-    JtPsi <- dPsi.dTheta(out.NPL$estimate,Phat$PRhat, Phat$PFhat, Y, regr)
+    JpPsi <- dPsiDp(Phat$PRhat, Phat$PFhat, out.NPL$est, Y, regr, fixed.par)
+    JtPsi <- dPsi.dTheta(out.NPL$estimate,Phat$PRhat, Phat$PFhat, Y, regr, fixed.par)
     
     JpPsi.inv <-  tryCatch(solve(diag(nrow(JpPsi)) - t(JpPsi)),
                            error=function(x){
@@ -523,11 +543,13 @@ sigint <- function(formulas, data, subset, na.action,
     # bottomSlice <- solve(Dtheta.theta  +
     #                        t(JtPsi) %*% solve(diag(nrow(JpPsi)) - t(JpPsi)) %*% t(Dtheta.p))
     vcov.NPL <- topSlice %*% Dtheta.theta %*% bottomSlice
+    rownames(vcov.NPL) <- colnames(vcov.NPL) <- names(start.beta)
     # cat("gradient", out.NPL$gradient, "\n")
     # cat("gradient2",  grqll(out.NPL$estimate), "\n")
     # cat("gradient", out.NPL.k$gradient, "\n")
     #### Build npl.out ####
     npl.out <- list(coefficients = out.NPL$estimate,
+                    fixed.par=fixed.par,
                     vcov=vcov.NPL,
                     logLik = out.NPL$maximum,
                     gradient = out.NPL$gradient,
@@ -549,6 +571,7 @@ sigint <- function(formulas, data, subset, na.action,
   }else{
     #### PL output ###
     pl.out <- list(coefficients = out$estimate,
+                   fixed.par=fixed.par,
                    logLik = out$maximum,
                    gradient = out$gradient,
                    Phat = Phat0,
@@ -578,8 +601,8 @@ sigint <- function(formulas, data, subset, na.action,
             while(mean(Y.boot) == 0 | mean(Y.boot) == 1){
               use <- sample(1:ncol(Y), replace=T)
               Y.boot <- Y[,use]
-              X1.boot <- X1[use,]
-              X2.boot <- X2[use,]
+              X1.boot <- X1[use,,drop=FALSE]
+              X2.boot <- X2[use,,drop=FALSE]
             }
             index1.boot <- colSums(Y.boot[2:4,]) >= 1
             index2.boot <- colSums(Y.boot[3:4,]) >= 1
@@ -591,6 +614,7 @@ sigint <- function(formulas, data, subset, na.action,
             
             
             phat.X.boot <- lapply(phat.X.boot, as.data.frame)
+            phat.X.boot <- lapply(phat.X.boot, function(x){colnames(x) <- c("y", colnames(X1)); return(x)})
             if(length(unique(phat.X.boot$X1[,1])) == 2){
               phat.X.boot$X1[,1] <- as.factor(phat.X.boot$X1[,1])
               type1 <- "prob"
@@ -603,8 +627,8 @@ sigint <- function(formulas, data, subset, na.action,
               type2 <- "response"
             }
             
-            m1 <- randomForest(y=phat.X.boot$X1[,1], x=phat.X.boot$X1[,-1])
-            m2 <- randomForest(y=phat.X.boot$X2[,1], x=phat.X.boot$X2[,-1])
+            m1 <- randomForest(y=phat.X.boot$X1[,1], x=phat.X.boot$X1[,-1,drop=FALSE])
+            m2 <- randomForest(y=phat.X.boot$X2[,1], x=phat.X.boot$X2[,-1,drop=FALSE])
             
             phat.out <- list(PRhat = predict(m1, newdata=X1, type=type1),
                              PFhat = predict(m2, newdata=X2, type=type2))
@@ -619,7 +643,7 @@ sigint <- function(formulas, data, subset, na.action,
           SIGMA <- var(Phat.boot, na.rm=TRUE)
         }
       }
-      Dtheta <- eval_gr_qll.i(out$estimate, Phat0$PRhat, Phat0$PFhat, Y, regr)
+      Dtheta <- eval_gr_qll.i(out$estimate, Phat0$PRhat, Phat0$PFhat, Y, regr, fixed.par)
       # Dtheta <- numDeriv::hessian(QLL.jo, out$estimate, PRhat=Phat0$PRhat, PFhat=Phat0$PFhat, Y=Y, regr=regr)
       Dtheta.theta <- crossprod(Dtheta)
       Dtheta.theta.inv <- tryCatch(solve(Dtheta.theta),
@@ -628,11 +652,13 @@ sigint <- function(formulas, data, subset, na.action,
                                      return(MASS::ginv(Dtheta.theta))
                                    })
       
-      Dp <- eval_gr_qll.ip(Phat0$PRhat, Phat0$PFhat, out$est, Y, regr) #NAs are appearing here
+      Dp <- eval_gr_qll.ip(Phat0$PRhat, Phat0$PFhat, out$est, Y, regr, fixed.par) #NAs are appearing here
       Dtheta.p <- crossprod(Dtheta,Dp) 
       
       
       vcov.PL <- Dtheta.theta.inv + Dtheta.theta.inv %*% Dtheta.p %*% SIGMA %*% t(Dtheta.p) %*% Dtheta.theta.inv
+      rownames(vcov.PL) <- colnames(vcov.PL) <- names(start.beta)
+      
       pl.out$vcov <- vcov.PL
     }
     

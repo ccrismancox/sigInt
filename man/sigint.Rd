@@ -4,14 +4,15 @@
 \alias{sigint}
 \title{Estimating the parameters of the canonical discrete crisis bargaining game.}
 \usage{
-sigint(formulas, data, subset, na.action, method = c("npl", "pl"),
-  npl.maxit = 25, npl.tol = 1e-07, npl.trace = FALSE, start.beta,
-  maxlik.method = "NR", phat, phat.formulas, pl.vcov = FALSE,
-  phat.vcov, seed = 12345, maxlik.options = list())
+sigint(formulas, data, subset, na.action, fixed.par = list(),
+  method = c("npl", "pl"), npl.maxit = 25, npl.tol = 1e-07,
+  npl.trace = FALSE, start.beta, maxlik.method = "NR", phat,
+  phat.formulas, pl.vcov = FALSE, phat.vcov, seed = 12345,
+  maxlik.options = list())
 }
 \arguments{
-\item{formulas}{a Formula object four variables on the left-hand side and 
-seven separate (7) right-hand sides. See "Details" and examples below.}
+\item{formulas}{a \code{Formula} object four variables on the left-hand side and 
+seven (7)  separateright-hand sides. See "Details" and examples below.}
 
 \item{data}{a data frame containing the variables used to fit the model.
 Each row of the data frame describes an individual game
@@ -24,6 +25,13 @@ observations to be used in fitting the model.}
 
 \item{na.action}{how do deal with missing data (\code{NA}s).  Defaults to the 
 \code{na.action} setting of \code{\link[base]{options}} (typically \code{na.omit}).}
+
+\item{fixed.par}{a list with up to seven (7) named elements for normalizing payoffs to non-zero values.
+Names must match a payoff name as listed in "Details."
+Each named element should contain a single number that is the fixed (not estimated) value of that payoff.
+For example, to fix each side's victory-without-fighting payoff to 1
+ use \code{fixed.par=list(VA=1, VB=1)} and set their portions of the \code{formulas} to zero.
+To normalize a payoff to zero, you only need to specify it has a zero in the \code{formulas}.}
 
 \item{method}{whether to use the nested-pseudo-likelihood (\code{"npl"}, default) or
 the pseudo-likelihood method for fitting the model. See "Details" for more 
@@ -169,7 +177,8 @@ The model corresponds to an extensive-form,
    \item \eqn{W_A} is a function  of the variables \code{x1}, \code{x2} and a constant term.
    \item \eqn{W_B} is a function of the variable  \code{x1} and a constant term.
   \item \eqn{a} is a constant term.
-  \item \eqn{V_B} is fixed to 0. }
+  \item \eqn{V_B} is fixed to 0 (or a non-zero value set by \code{fixed.par}. }
+
 
   Each row of the data frame should be a summary of the covariates and outcomes associated with that particular game.
   When each game is observed only once, then this will resemble an ordinary dyad-time data frame.
@@ -253,6 +262,7 @@ f1 <- sq+cd+sf+bd ~ sqrt(senderecondep) + senderdemocracy + contig + ally -1|#SA
                     targetdemocracy + lncaprat| #barWB
                     senderdemocracy| #bara
                     -1#VB
+
 ## Using Nested-Pseudo Likelihood  with default first stage                 
 fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
 summary(fit1)

@@ -125,7 +125,10 @@ predict.sigfit <- function(object, newdata, new.theta, type=c("actions", "outcom
   if(!missing(new.theta)){  #check for new.theta
     if(nrow(unique(new.theta)) != 1){ #is something in theta changing?
       if(missing(newdata) || is.null(newdata)){  #if theta is changing, there needs to be 1 newdata
-        stop("When taking a comparative static on a parameter, 1 row of new data is required")
+        warning("When taking a comparative static on a parameter, 1 row of new data is required. Setting all covariates to zero.")
+        newdata <- matrix(0, nrow=1, ncol=ncol(object$model))
+        colnames(newdata) <- colnames(object$model)
+        newdata <- as.data.frame(newdata)
       }else{
         if(nrow(unique(newdata)) != 1){
           stop("Varying both newdata and new.theta is not supported.")
@@ -182,7 +185,7 @@ predict.sigfit <- function(object, newdata, new.theta, type=c("actions", "outcom
   }
   
   
-  Ulist <- apply(as.matrix(par), 1, vec2U.regr, regr=regr)
+  Ulist <- apply(as.matrix(par), 1, vec2U.regr, regr=regr, fixed.par=object$fixed.par)
   Ulist <- unlist(Ulist, recursive = F)
   if(npar>1){#Situation where we vary theta, so we can clean this up
     Ulist <- sapply(unique(names(Ulist)), 

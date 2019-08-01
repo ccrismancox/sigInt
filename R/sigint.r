@@ -271,6 +271,7 @@
 #' @import stats
 #' @import utils
 #' @import MASS
+#' @import maxLik
 #' @export
 sigint <- function(formulas, data, subset, na.action,
                    fixed.par=list(),

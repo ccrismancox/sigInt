@@ -64,10 +64,10 @@
 #' fit3 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
 #'
 #' ## Simple regression table
-#' toLatex(fit1, fit2, fit3)
+#' toLatexTable(fit1, fit2, fit3)
 #'
 #' ## More options: User supplied standard errors
-#' toLatex(fit1, fit2, fit3,
+#' toLatexTable(fit1, fit2, fit3,
 #'         se.list=list(sqrt(diag(vcov(fit1))),
 #'                      sqrt(diag(vcov(fit3))),
 #'                      sqrt(diag(vcov(fit3)))),
@@ -79,7 +79,7 @@
 #' 
 #' \dontrun{
 #' ## More options, including printing to a file
-#' toLatex(fit1, fit2, fit3,
+#' toLatexTable(fit1, fit2, fit3,
 #'         caption = "Economic Sanctions",
 #'         label = "tab:sanctions",
 #'         model.names = c("NPL", "PL", "PL"),
@@ -87,7 +87,7 @@
 #'
 #' @export
 
-toLatex <- function(..., 
+toLatexTable <- function(..., 
                            se.list, 
                            stars=c("default", "all", "none"),
                            caption="",

@@ -263,12 +263,15 @@ f1 <- sq+cd+sf+bd ~ sqrt(senderecondep) + senderdemocracy + contig + ally -1|#SA
                     senderdemocracy| #bara
                     -1#VB
 
-## Using Nested-Pseudo Likelihood  with default first stage                 
+## Using Nested-Pseudo Likelihood  with default first stage     
+\dontrun{            
 fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
 summary(fit1)
+}
 
-## Using Pseudo Likelihood with user made first stage
-Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
+
+## Using Pseudo Likelihood with user supplied first stage
+Phat <- list(PRhat=sanctionsData$PRnpl, PFhat=sanctionsData$PFnpl)
 fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 summary(fit2)
 
@@ -281,8 +284,10 @@ summary(fit3)
 
 ## Using Pseudo Likelihood with default first stage and 
 ## bootstrapped standard errors for the first stage covariance
+\dontrun{
 fit4 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
 summary(fit4)
+}
 
 }
 \references{

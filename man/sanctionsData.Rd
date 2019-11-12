@@ -46,6 +46,9 @@ anticipated costs for being sanctions}
 \item{\code{PRhat}}{Estimated probability that the Target resists a challenge (fit using a random forest)}
 \item{\code{PFhat}}{Estimated probability that the Challenger stands firm given that 
 it challenged (fit using a random forest)}
+\item{\code{PRnpl}}{Estimated probability that the Target resists a challenge (taken from the last stage of NPL iteration)}
+\item{\code{PFnpl}}{Estimated probability that the Challenger stands firm given that 
+it challenged  (taken from the last stage of NPL iteration)}
 }
 }
 \references{

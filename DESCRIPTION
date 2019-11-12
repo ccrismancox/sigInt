@@ -1,12 +1,13 @@
 Package: sigInt
-Title: Estimate the parameters of a discrete crisis-bargaining game
-Version: 0.0.0.9000
+Title: Estimate the Parameters of a Discrete Crisis-Bargaining Game
+Version: 0.2.0
 Authors@R: c(person("Casey", "Crisman-Cox", email = "ccrismancox@gmail.com", role = c("aut", "cre")),  person("Michael", "Gibilisco", email = "michael.gibilisco@caltech.edu", role = c("aut")))
-Description: Provides pseudo-likelihood methods for analyzing the canonical signaling game in international relations.
+Description: Provides pseudo-likelihood methods for analyzing the canonical signaling game in international relations as described in Crisman-Cox and Gibilisco (2019).
 Depends: R (>= 3.4.0)
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/ccrismancox/sigint
 Maintainer: Casey Crisman-Cox <ccrismancox@gmail.com>
 Author: Casey Crisman-Cox [aut, cre], 
   Michael Gibilisco [aut]

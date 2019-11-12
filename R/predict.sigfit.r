@@ -103,20 +103,21 @@
 #'                     senderdemocracy| #bara
 #'                     -1#VB
 #
-#' ## Using Nested-Pseudo Likelihood  with default first stage                 
+#' ## Using Nested-Pseudo Likelihood  with default first stage    
+#' \dontrun{             
 #' fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
-#'
-#' \dontrun{
-#' p.out <- predict(fit1, parallel=TRUE) #fitted choice probabilites for all observations
+#' p.out <- predict(fit2, parallel=TRUE) #fitted choice probabilites for all observations
 #' }
 #'
-#' #outcome probabilities for first five games
-#' p1 <- predict(fit1, newdata=sanctionsData[1:5,], type="outcome")
+#' ## Outcome probabilities for first five using PL method
+#' Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
+#' fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
+#' p1 <- predict(fit2, newdata=sanctionsData[1:5,], type="outcome")
 #'
-#' # comparative static on \bar{a}, compute more precise equilibria with uniroot
-#' new.theta <- data.frame(t(replicate(25, coef(fit1))))
+#' ## comparative static on \bar{a}, compute more precise equilibria with uniroot
+#' new.theta <- data.frame(t(replicate(25, coef(fit2))))
 #' new.theta[,19] <- seq(-6, 0, length=25)
-#' p2 <- predict(fit1, newdata=sanctionsData[1,], new.theta=new.theta, control=list(comp=TRUE))
+#' p2 <- predict(fit2, newdata=sanctionsData[1,], new.theta=new.theta, control=list(comp=TRUE))
 #'
 #' 
 

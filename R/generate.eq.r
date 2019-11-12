@@ -65,7 +65,7 @@
 #'              
 #' theta <- data.frame(VA = 1, barWA = -1.9, barWB = -2.9,
 #'                     barWB1 = 0.1, bara = -1.2, VB = 1)
-#' data <- data.frame(x1 = seq(from = -1,to = 2, length.out = 301))
+#' data <- data.frame(x1 = seq(from = -1,to = 2, length.out = 101))
 #' test <- generate.eq(ftest1, data = data, theta = theta)
 #' plot(test, prob = "pr")
 #' 

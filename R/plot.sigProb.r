@@ -27,16 +27,18 @@
 #'                     senderdemocracy| #bara
 #'                     -1#VB
 #
-#' ## Using Nested-Pseudo Likelihood  with default first stage                 
-#' fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
+#' ## Outcome probabilities for first five using NPL probabilities
+#' Phat <- list(PRhat=sanctionsData$PRnpl, PFhat=sanctionsData$PFnpl)
+#' fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 #'
-#' new.theta <- data.frame(t(replicate(25, coef(fit1))))
+#' ## comparative static on \bar{a}, compute more precise equilibria with uniroot
+#' new.theta <- data.frame(t(replicate(25, coef(fit2))))
 #' new.theta[,19] <- seq(-6, 0, length=25)
-#' 
-#' p1.a <- predict(fit1, newdata=sanctionsData[93,], new.theta = new.theta,
+#' pout <- predict(fit2, newdata=sanctionsData[93,], new.theta=new.theta, 
 #'                 control=list(gridsize=500))
+#'
 #' 
-#' plot(p1.a, prob="pc", ylab="Pr Challenge", xlab="Audience Costs", type="l")
+#' plot(pout, prob="pc", ylab="Pr Challenge", xlab="Audience Costs")
 #'
 #' 
 #' 

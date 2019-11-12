@@ -76,19 +76,25 @@ f1 <- sq+cd+sf+bd ~ sqrt(senderecondep) + senderdemocracy + contig + ally -1|#SA
                     targetdemocracy + lncaprat| #barWB
                     senderdemocracy| #bara
                     -1#VB
-## Using Nested-Pseudo Likelihood  with default first stage                 
+## Using Nested-Pseudo Likelihood  with default first stage
+\dontrun{
 fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
+}
+
 ## Using Pseudo Likelihood with user made first stage
 Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
 fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 
 ## Using Pseudo Likelihood with default first stage and bootstrapped standard errors
+\dontrun{
 fit3 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
+}
 
 ## Simple regression table
-toLatexTable(fit1, fit2, fit3)
+toLatexTable(fit2)
 
-## More options: User supplied standard errors
+## More options: multiple models and user supplied standard errors
+\dontrun{
 toLatexTable(fit1, fit2, fit3,
         se.list=list(sqrt(diag(vcov(fit1))),
                      sqrt(diag(vcov(fit3))),
@@ -96,16 +102,18 @@ toLatexTable(fit1, fit2, fit3,
         stars="all",
         caption = "Economic Sanctions",
         label = "tab:sanctions",
-        model.names = c("NPL", "PL", "PL"),
-        print.xtable.options=list(booktabs=TRUE))
-
+        model.names = c("NPL", "PL", "PL"))
+}         
+        
 \dontrun{
-## More options, including printing to a file
+## More options, from print.xtable including printing to a file
 toLatexTable(fit1, fit2, fit3,
         caption = "Economic Sanctions",
         label = "tab:sanctions",
         model.names = c("NPL", "PL", "PL"),
-        print.xtable.options=list(file="myTable.tex"))}
+        print.xtable.options=list(file="myTable.tex",
+                                  booktabs=TRUE))
+}
 
 }
 \seealso{

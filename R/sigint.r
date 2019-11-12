@@ -194,6 +194,8 @@
 #' @return An object of class \code{sigfit}, containing:\describe{ 
 #'   \item{\code{coefficients}}{A vector of estimated model parameters.}  
 #'   \item{\code{vcov}}{Estimated variance-covariance matrix. When \code{pl.vcov = FALSE}, this slot is omitted.} 
+#'   \item{\code{utilities}}{Each actor's utilities at the estimated values.}  
+#'   \item{\code{fixed.par}}{The fixed utilities if specified in the call.}  
 #'   \item{\code{logLik}}{Final log-likelihood value of the model.}
 #'   \item{\code{gradient}}{First derivative values at the estimated parameters.}
 #'   \item{\code{Phat}}{List of two elements 
@@ -244,12 +246,15 @@
 #'                     senderdemocracy| #bara
 #'                     -1#VB
 #'
-#' ## Using Nested-Pseudo Likelihood  with default first stage                 
+#' ## Using Nested-Pseudo Likelihood  with default first stage     
+#' \dontrun{            
 #' fit1 <- sigint(f1, data=sanctionsData, npl.trace=TRUE)
 #' summary(fit1)
+#' }
 #' 
-#' ## Using Pseudo Likelihood with user made first stage
-#' Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
+#' 
+#' ## Using Pseudo Likelihood with user supplied first stage
+#' Phat <- list(PRhat=sanctionsData$PRnpl, PFhat=sanctionsData$PFnpl)
 #' fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 #' summary(fit2)
 #' 
@@ -262,8 +267,10 @@
 #' 
 #' ## Using Pseudo Likelihood with default first stage and 
 #' ## bootstrapped standard errors for the first stage covariance
+#' \dontrun{
 #' fit4 <- sigint(f1, data=sanctionsData, method="pl", pl.vcov=25) 
 #' summary(fit4)
+#' }
 #' 
 #' @import pbivnorm
 #' @import randomForest
@@ -520,19 +527,23 @@ sigint <- function(formulas, data, subset, na.action,
     JpPsi <- dPsiDp(Phat$PRhat, Phat$PFhat, out.NPL$est, Y, regr, fixed.par)
     JtPsi <- dPsi.dTheta(out.NPL$estimate,Phat$PRhat, Phat$PFhat, Y, regr, fixed.par)
     
-    JpPsi.inv <-  tryCatch(solve(diag(nrow(JpPsi)) - t(JpPsi)),
+    tJpPsi.inv <-  tryCatch(solve(diag(nrow(JpPsi)) - t(JpPsi)),
                            error=function(x){
                              warning("Possible singular matrix detected, using Pseudoinverse");
                              return(MASS::ginv(diag(nrow(JpPsi)) - t(JpPsi)))
                            })
-    
+    JpPsi.inv <-  tryCatch(solve(diag(nrow(JpPsi)) - (JpPsi)),
+                           error=function(x){
+                             warning("Possible singular matrix detected, using Pseudoinverse");
+                             return(MASS::ginv(diag(nrow(JpPsi)) - (JpPsi)))
+                           })
     
     topSlice <- tryCatch(solve(Dtheta.theta  +
-                                 Dtheta.p %*% JpPsi.inv %*%   JtPsi),
+                                 Dtheta.p %*% tJpPsi.inv %*%   JtPsi),
                          error=function(x){
                            warning("Possible singular matrix detected, using Pseudoinverse");
                            return(MASS::ginv(Dtheta.theta  +
-                                               Dtheta.p %*% JpPsi.inv %*%   JtPsi))
+                                               Dtheta.p %*% tJpPsi.inv %*%   JtPsi))
                          })
     bottomSlice <- tryCatch(solve(Dtheta.theta  +
                                      t(JtPsi) %*% JpPsi.inv %*% t(Dtheta.p)),
@@ -555,6 +566,7 @@ sigint <- function(formulas, data, subset, na.action,
     #### Build npl.out ####
     npl.out <- list(coefficients = out.NPL$estimate,
                     fixed.par=fixed.par,
+                    utilities = vec2U.regr(out.NPL$estimate,regr,fixed.par),
                     vcov=vcov.NPL,
                     logLik = out.NPL$maximum,
                     gradient = out.NPL$gradient,
@@ -569,7 +581,7 @@ sigint <- function(formulas, data, subset, na.action,
                     maxlik.method=maxlik.method,
                     maxlik.code = out.NPL$code,
                     maxlik.message = out.NPL$message,
-                    npl.iter=iter,                    
+                    npl.iter=iter,      
                     npl.eval = eval)
     class(npl.out) <- "sigfit"
     return(npl.out)
@@ -577,6 +589,7 @@ sigint <- function(formulas, data, subset, na.action,
     #### PL output ###
     pl.out <- list(coefficients = out$estimate,
                    fixed.par=fixed.par,
+                   utilities = vec2U.regr(out.NPL$estimate,regr,fixed.par),
                    logLik = out$maximum,
                    gradient = out$gradient,
                    Phat = Phat0,

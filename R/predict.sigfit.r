@@ -196,9 +196,15 @@ predict.sigfit <- function(object, newdata, new.theta, type=c("actions", "outcom
     Ulist <- sapply(unique(names(Ulist)), 
                     function(x) unname(unlist(Ulist[names(Ulist)==x])), 
                     simplify=FALSE)
-    # names(Ulist)   <- c(names(regr), "sig")
+    # names(Ulist)   <- c(names(regr), "sig") #wrong order
+    U.names <- do.call(rbind, str_split(names(Ulist), "\\."))
+    U.names <- U.names[,ncol(U.names)]
+    names(Ulist) <- U.names
   }else{
-    # names(Ulist)   <- c(names(regr), "sig")
+    # names(Ulist)   <- c(names(regr), "sig") #wrong order
+    U.names <- do.call(rbind, str_split(names(Ulist), "\\."))
+    U.names <- U.names[,ncol(U.names)]
+    names(Ulist) <- U.names
     Ulist$sig <- rep(1, length(Ulist$SA))
   }
   
@@ -295,16 +301,16 @@ Please install parallel to use this option.  Switching to parallel=FALSE")
     
   }
   colnames(mf.new) <- stringr::str_replace(string=colnames(mf.new),
-                                        pattern=":", replacement=".")
+                                           pattern=":", replacement=".")
   colnames(mf.new) <- stringr::str_replace(string=colnames(mf.new),
-                                        pattern="\\(", replacement="")
+                                           pattern="\\(", replacement="")
   colnames(mf.new) <- stringr::str_replace(string=colnames(mf.new),
-                                        pattern="\\)", replacement="")
+                                           pattern="\\)", replacement="")
   colnames(mf.new) <- stringr::str_replace(string=colnames(mf.new),
-                                        pattern=" ", replacement="")    
-
+                                           pattern=" ", replacement="")    
+  
   mf.new$Row <- 1:nrow(mf.new)
-
+  
   colnames(par) <- stringr::str_replace(string=names(object$coef),
                                         pattern=":", replacement=".")
   colnames(par) <- stringr::str_replace(string=colnames(par),

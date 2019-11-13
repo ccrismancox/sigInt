@@ -589,7 +589,7 @@ sigint <- function(formulas, data, subset, na.action,
     #### PL output ###
     pl.out <- list(coefficients = out$estimate,
                    fixed.par=fixed.par,
-                   utilities = vec2U.regr(out.NPL$estimate,regr,fixed.par),
+                   utilities = vec2U.regr(out$estimate,regr,fixed.par),
                    logLik = out$maximum,
                    gradient = out$gradient,
                    Phat = Phat0,

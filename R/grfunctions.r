@@ -276,6 +276,8 @@ eval_gr_qll.i <- function(x,PRhat,PFhat,Y,regr, fixed.par){
   )  
   dVB  <- apply(regr$VB, 2, function(x){colSums(t(as.numeric(x)*t(dVB))*as.numeric(Y))})
   
+  
+  
   # dSA.denom <- (pC*(1 - PBdv/pC)*pWBinner)
   # dSA.denom[dSA.denom<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)
   dSA.denom2 <- (PRhat*(-pC+PBdv))
@@ -286,7 +288,7 @@ eval_gr_qll.i <- function(x,PRhat,PFhat,Y,regr, fixed.par){
                 -Del_v1d1 /(PRhat*PBdv),
                 (P1*D2 + P2*D1 - Del_v1d1)/dSA.denom2
   )
-  dSA  <- apply(regr$SA, 2, function(x){t(as.numeric(x)*t(dSA))*as.numeric(Y)})
+  dSA  <- apply(regr$SA, 2, function(x){colSums(t(as.numeric(x)*t(dSA))*as.numeric(Y))})
   
   dCB.denom <- (PFhat*(pnorm(WBinner, lower.tail=F))) 
   dCB.denom[dCB.denom<=sqrt(.Machine$double.eps)] <- sqrt(.Machine$double.eps)

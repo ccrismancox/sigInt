@@ -2,7 +2,7 @@ Package: sigInt
 Title: Estimate the Parameters of a Discrete Crisis-Bargaining Game
 Version: 0.2.0
 Authors@R: c(person("Casey", "Crisman-Cox", email = "ccrismancox@gmail.com", role = c("aut", "cre")),  person("Michael", "Gibilisco", email = "michael.gibilisco@caltech.edu", role = c("aut")))
-Description: Provides pseudo-likelihood methods for empirically analyzing common signaling games in international relations as described in Crisman-Cox and Gibilisco (2019) <https://doi.org/10.1017/psrm.2019.58>.
+Description: Provides pseudo-likelihood methods for empirically analyzing common signaling games in international relations as described in Crisman-Cox and Gibilisco (2019) <doi:10.1017/psrm.2019.58>.
 Depends: R (>= 3.4.0)
 License: GPL (>= 3)
 Encoding: UTF-8

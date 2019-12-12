@@ -4,8 +4,7 @@
 \alias{plot.sigProb}
 \title{Plot predicted probabilities from a \code{sigProb} object.}
 \usage{
-\method{plot}{sigProb}(x, prob, xvar, main = "", ylab, xlab,
-  col = "blue", pch = 16, ...)
+\method{plot}{sigProb}(x, prob, xvar, main = "", ylab, xlab, col = "blue", pch = 16, ...)
 }
 \arguments{
 \item{x}{an object of class \code{sigProb}, which is obtained by using \code{\link{predict.sigfit}} on a model fit using \code{\link{sigint}}.}
@@ -44,7 +43,7 @@ f1 <- sq+cd+sf+bd ~ sqrt(senderecondep) + senderdemocracy + contig + ally -1|#SA
 Phat <- list(PRhat=sanctionsData$PRnpl, PFhat=sanctionsData$PFnpl)
 fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 
-## comparative static on \\bar{a}, compute more precise equilibria with uniroot
+## comparative static on \bar{a}, compute more precise equilibria with uniroot
 new.theta <- data.frame(t(replicate(25, coef(fit2))))
 new.theta[,19] <- seq(-6, 0, length=25)
 pout <- predict(fit2, newdata=sanctionsData[93,], new.theta=new.theta, 

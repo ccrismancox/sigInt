@@ -4,10 +4,22 @@
 \alias{toLatexTable}
 \title{Export a \code{sigfit} object into paper-ready LaTeX table}
 \usage{
-toLatexTable(..., se.list, stars = c("default", "all", "none"),
-  caption = "", label, align, digits = 2,
-  se.note = "Standard errors in parenthesis", order, covariate.labels,
-  model.names, dep.varnames, k = 1, print.xtable.options = list())
+toLatexTable(
+  ...,
+  se.list,
+  stars = c("default", "all", "none"),
+  caption = "",
+  label,
+  align,
+  digits = 2,
+  se.note = "Standard errors in parenthesis",
+  order,
+  covariate.labels,
+  model.names,
+  dep.varnames,
+  k = 1,
+  print.xtable.options = list()
+)
 }
 \arguments{
 \item{...}{one or more models fit using \code{\link{sigint}}.}

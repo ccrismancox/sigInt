@@ -4,11 +4,25 @@
 \alias{sigint}
 \title{Estimating the parameters of the canonical discrete crisis bargaining game.}
 \usage{
-sigint(formulas, data, subset, na.action, fixed.par = list(),
-  method = c("npl", "pl"), npl.maxit = 25, npl.tol = 1e-07,
-  npl.trace = FALSE, start.beta, maxlik.method = "NR", phat,
-  phat.formulas, pl.vcov = FALSE, phat.vcov, seed = 12345,
-  maxlik.options = list())
+sigint(
+  formulas,
+  data,
+  subset,
+  na.action,
+  fixed.par = list(),
+  method = c("npl", "pl"),
+  npl.maxit = 25,
+  npl.tol = 1e-07,
+  npl.trace = FALSE,
+  start.beta,
+  maxlik.method = "NR",
+  phat,
+  phat.formulas,
+  pl.vcov = FALSE,
+  phat.vcov,
+  seed = 12345,
+  maxlik.options = list()
+)
 }
 \arguments{
 \item{formulas}{a \code{Formula} object four variables on the left-hand side and 
@@ -89,6 +103,8 @@ The NPL is less sensitive, but we always recommend checking the first order cond
 An object of class \code{sigfit}, containing:\describe{ 
   \item{\code{coefficients}}{A vector of estimated model parameters.}  
   \item{\code{vcov}}{Estimated variance-covariance matrix. When \code{pl.vcov = FALSE}, this slot is omitted.} 
+  \item{\code{utilities}}{Each actor's utilities at the estimated values.}  
+  \item{\code{fixed.par}}{The fixed utilities if specified in the call.}  
   \item{\code{logLik}}{Final log-likelihood value of the model.}
   \item{\code{gradient}}{First derivative values at the estimated parameters.}
   \item{\code{Phat}}{List of two elements 
@@ -291,9 +307,9 @@ summary(fit4)
 
 }
 \references{
-Casey Crisman-Cox and Michael Gibilisco. 2018. "Estimating 
+Casey Crisman-Cox and Michael Gibilisco. 2019. "Estimating 
 Signaling Games in International Relations: Problems and Solutions."
-Unpublished Manuscript.
+\emph{Political Science Research and Methods}. Online First.
 
 Jeffrey B. Lewis and Kenneth A. Schultz.  2003.  "Revealing
 Preferences: Empirical Estimation of a Crisis Bargaining Game with

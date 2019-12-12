@@ -4,9 +4,16 @@
 \alias{predict.sigfit}
 \title{Predicted probabilities and comparative statics for signaling games}
 \usage{
-\method{predict}{sigfit}(object, newdata, new.theta, type = c("actions",
-  "outcomes"), na.action = na.pass, control = list(),
-  parallel = FALSE, ...)
+\method{predict}{sigfit}(
+  object,
+  newdata,
+  new.theta,
+  type = c("actions", "outcomes"),
+  na.action = na.pass,
+  control = list(),
+  parallel = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{a fitted model of class \code{sigfit}.}
@@ -126,7 +133,7 @@ Phat <- list(PRhat=sanctionsData$PRhat, PFhat=sanctionsData$PFhat)
 fit2 <- sigint(f1, data=sanctionsData, method="pl", phat=Phat)
 p1 <- predict(fit2, newdata=sanctionsData[1:5,], type="outcome")
 
-## comparative static on \\bar{a}, compute more precise equilibria with uniroot
+## comparative static on \bar{a}, compute more precise equilibria with uniroot
 new.theta <- data.frame(t(replicate(25, coef(fit2))))
 new.theta[,19] <- seq(-6, 0, length=25)
 p2 <- predict(fit2, newdata=sanctionsData[1,], new.theta=new.theta, control=list(comp=TRUE))

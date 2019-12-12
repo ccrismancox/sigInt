@@ -90,6 +90,7 @@
 #' @import Formula
 #' @import stats
 #' @import utils
+#' @import stringr
 #' @export
 #'
 #' @examples

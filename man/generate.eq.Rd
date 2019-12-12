@@ -4,8 +4,15 @@
 \alias{generate.eq}
 \title{Equilibrium analysis of the empirical crisis signaling game}
 \usage{
-generate.eq(formulas, data, theta, type = c("actions", "outcomes"),
-  na.action = na.omit, control = list(), parallel = FALSE)
+generate.eq(
+  formulas,
+  data,
+  theta,
+  type = c("actions", "outcomes"),
+  na.action = na.omit,
+  control = list(),
+  parallel = FALSE
+)
 }
 \arguments{
 \item{formulas}{a Formula object with no left-hand side and 

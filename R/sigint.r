@@ -228,9 +228,9 @@
 #' 
 #' 
 #' @references 
-#' Casey Crisman-Cox and Michael Gibilisco. 2018. "Estimating 
+#' Casey Crisman-Cox and Michael Gibilisco. 2019. "Estimating 
 #' Signaling Games in International Relations: Problems and Solutions."
-#' Unpublished Manuscript.
+#' \emph{Political Science Research and Methods}. Online First.
 #' 
 #' Jeffrey B. Lewis and Kenneth A. Schultz.  2003.  "Revealing
 #' Preferences: Empirical Estimation of a Crisis Bargaining Game with

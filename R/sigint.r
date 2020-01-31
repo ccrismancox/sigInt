@@ -394,6 +394,9 @@ sigint <- function(formulas, data, subset, na.action,
       if (length(phat.formulas)[2] ==1){
         phat.formulas <- as.Formula(formula(phat.formulas, rhs=c(1,1)))
       }
+      phat.formulas <- update(phat.formulas, sq+cd+bd+sf~.)
+      
+      
       ## make the model frame
       mf.phat <- match(c("data", "subset", "na.action"), names(cl), 0L)
       mf.phat <- cl[c(1L, mf.phat)]
@@ -678,6 +681,7 @@ sigint <- function(formulas, data, subset, na.action,
       rownames(vcov.PL) <- colnames(vcov.PL) <- names(start.beta)
       
       pl.out$vcov <- vcov.PL
+      pl.out$Phat.boot <- Phat.boot
     }
     
     class(pl.out) <- "sigfit"
